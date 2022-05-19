@@ -83,9 +83,16 @@ app.put("/api/courses/:id", (req, res) => {
 
   const schema = Joi.object({
     subject: Joi.string().min(3).required(),
+    id: Joi.required(),
   });
 
-  const valRes = schema.validate({ subject: req.body.subject });
+  const valRes = schema.validate({
+    subject: req.body.subject,
+    id: req.body.id,
+  });
+
+  console.log(valRes);
+  res.send(valRes);
 
   if (valRes.error) {
     res.status(400).send(valRes.error[0].message);
@@ -99,6 +106,15 @@ app.put("/api/courses/:id", (req, res) => {
 
   course[inx].subject = req.body.subject;
   res.send(course);
+});
+
+app.delete("/api/courses/:id", (req, res) => {
+  const ccours = course.find((c) => c.id === parseInt(req.params.id));
+  if (!ccours) res.status(404).send("Courses Not Founmd");
+  const index = course.indexOf(ccours);
+  course.splice(index, 1); // delete one object
+  res.send(course); // delete
+  console.log(course);
 });
 
 const port = process.env.PORT || 3000;
